@@ -74,6 +74,43 @@ const thoughtController = {
       })
       .catch((err) => res.status(500).json(err));
   },
+
+  addReaction(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $addToSet: { reactions: req.body } },
+      { new: true }
+    )
+      .populate({
+        path: "reactions",
+        select: "-__v",
+      })
+      .then((thoughtData) => {
+        !thoughtData
+          ? res.status(404).json({
+              message: "No thought found with this id",
+            })
+          : res.json(thoughtData);
+      })
+      .catch((err) => res.status(500).json(err));
+  },
+
+  deleteReactionById(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $pull: { reactions: { reactionId: req.params.reactionId } } },
+      { new: true }
+    )
+      .then((thoughtData) => {
+        if (!thoughtData) {
+          res.status(404).json({
+            message: "No thought found with this id",
+          });
+        }
+        res.json(thoughtData);
+      })
+      .catch((err) => res.status(500).json(err));
+  },
 };
 
 module.exports = thoughtController;

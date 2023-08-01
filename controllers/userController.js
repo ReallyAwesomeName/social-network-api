@@ -31,6 +31,26 @@ const userController = {
       .then((user) => res.json(user))
       .catch((err) => res.status(422).json(err));
   },
+  // add friend
+  addFriend(req, res) {
+    User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $addToSet: { friends: req.params.friendId } },
+      { new: true }
+    )
+      .then((user) => res.json(user))
+      .catch((err) => res.status(422).json(err));
+  },
+  // remove friend
+  removeFriend(req, res) {
+    User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $pull: { friends: req.params.friendId } },
+      { new: true }
+    )
+      .then((user) => res.json(user))
+      .catch((err) => res.status(422).json(err));
+  },
 };
 
 module.exports = userController;
